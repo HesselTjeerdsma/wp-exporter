@@ -4,7 +4,7 @@
  * Description: Collects metrics ready to be exported to Prometheus. https://prometheus.io/
  * Version:     1.0
  * Author:      Peter Booker
- * Author URI:  http://www.peterbooker.com
+ * Author URI:  https://www.peterbooker.com
  */
 
 // Exit if accessed directly
