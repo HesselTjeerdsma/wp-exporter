@@ -1,12 +1,10 @@
 <?php
 /**
  * Plugin Name: Prometheus Exporter
- * Plugin URI:  https://kebo.io/
  * Description: Collects metrics ready to be exported to Prometheus. https://prometheus.io/
  * Version:     1.0
  * Author:      Peter Booker
  * Author URI:  http://www.peterbooker.com
- * License:     GPLv2+
  */
 
 // Exit if accessed directly
@@ -16,41 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Exit if no cache enabled
 if ( ! defined( 'WP_CACHE_KEY_SALT' ) || ! defined( 'WP_REDIS_OBJECT_CACHE' ) ) {
-	exit;
+	return;
 }
-
-function wpex_rewrites_init() {
-	
-    add_rewrite_rule(
-        'metrics/',
-        'index.php?_exporter_controller',
-        'top'
-	);
-		
-}
-add_action( 'init', 'wpex_rewrites_init' );
-
-function query_vars() {
-	
-    array_push( $vars, '_exporter_controller' );
-	return $vars;
-		
-}
-add_action( 'query_vars', 'query_vars' );
-
-function wpex_template_include( $template ) {
-	
-    $controller = get_query_var('_api_controller', null);
-	if ( $controller ) {
-		$template = __DIR__ . '/api/v1.php';
-	}
-	
-	return $template;
-		
-}
-add_action( 'template_include', 'wpex_template_include', 99 );
-
-//add_filter( 'protected_title_format', array( $this, 'protected_title_format' ) );
 
 if ( ! class_exists( 'WP_Exporter' ) ) {
 
@@ -123,4 +88,6 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 				
 		}
 	
+	}
+
 }
