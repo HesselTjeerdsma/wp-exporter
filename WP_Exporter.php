@@ -22,11 +22,18 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
     class WP_Exporter {
 		
 		/**
-         * NewRelic API URL
+         * Endpoint URL
          *
          * @var string
          */
-        private $api_url = 'https://api.newrelic.com/v2/';
+        private $endpoint_url = 'metrics/';
+
+	    /**
+	     * Endpoint Controller
+	     *
+	     * @var string
+	     */
+	    private $endpoint_controller = '_exporter_controller';
 		
 		public function __construct() {
 			
@@ -39,13 +46,13 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 		}
 		
 		/**
-         * Gets the API URL
+         * Gets the Endpoint URL
          *
          * @return string
          */
-        public function get_api_url() {
+        public function get_endpoint_url() {
 
-            return $this->api_url;
+            return $this->endpoint_url;
 
         }
 		
@@ -59,29 +66,48 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 			// Get Metric Data
 			
 		}
-		
+
+	    /**
+	     * Add the metrics endpoint used by Prometheus
+	     *
+	     * @return nil
+	     */
 		private function rewrites_init() {
 			
 			add_rewrite_rule(
-				'metrics/',
-				'index.php?_exporter_controller',
+				$this->endpoint_url,
+				'index.php?' . $this->endpoint_controller,
 				'top'
 			);
 				
 		}
-		
+
+	    /**
+	     * Add the query var for our metrics endpoint
+	     *
+	     * @return array
+	     */
 		private function add_query_vars() {
 			
-			array_push( $vars, '_exporter_controller' );
+			array_push( $vars, $this->endpoint_controller );
+
 			return $vars;
 				
 		}
-		
+
+	    /**
+	     * Redirect output
+	     *
+	     * TODO: Dont want to use a template file, need to find an alternative method
+	     *
+	     * @param object $template
+	     * @return object
+	     */
 		private function template_include( $template ) {
 			
 			$controller = get_query_var('_api_controller', null);
 			if ( $controller ) {
-				$template = __DIR__ . '/api/v1.php';
+				$template = __DIR__ . '/path/file.php';
 			}
 			
 			return $template;
