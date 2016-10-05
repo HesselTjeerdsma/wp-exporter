@@ -41,7 +41,9 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 			
 			add_action( 'query_vars', array( $this, 'add_query_vars' ) );
 			
-			add_action( 'template_include', array( $this, 'template_include' ), 99 );
+			//add_action( 'template_include', array( $this, 'template_include' ), 99 );
+
+			add_action( 'template_redirect', array( $this, 'output_endpoint_data' ) );
 			
 		}
 		
@@ -72,7 +74,7 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 	     *
 	     * @return nil
 	     */
-		private function rewrites_init() {
+		public function rewrites_init() {
 			
 			add_rewrite_rule(
 				$this->endpoint_url,
@@ -87,7 +89,7 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 	     *
 	     * @return array
 	     */
-		private function add_query_vars() {
+		public function add_query_vars() {
 			
 			array_push( $vars, $this->endpoint_controller );
 
@@ -103,9 +105,9 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 	     * @param object $template
 	     * @return object
 	     */
-		private function template_include( $template ) {
+		public function template_include( $template ) {
 			
-			$controller = get_query_var('_api_controller', null);
+			$controller = get_query_var( $this->endpoint_controller, null );
 			if ( $controller ) {
 				$template = __DIR__ . '/path/file.php';
 			}
@@ -113,7 +115,29 @@ if ( ! class_exists( 'WP_Exporter' ) ) {
 			return $template;
 				
 		}
+
+	    /**
+	     * Output Metrics
+	     *
+	     * TODO: Dont want to use a template file, need to find an alternative method
+	     *
+	     * @return object
+	     */
+	    public function output_endpoint_data() {
+
+		    global $wp_query;
+
+		    $controller = $wp_query->get( $this->endpoint_controller );
+
+		    if ( ! $controller ) {
+			    return;
+		    }
+
+		    wp_send_json( ['api' => 'v1'] );
+
+	    }
 	
 	}
 
 }
+$exporter = new WP_Exporter;
